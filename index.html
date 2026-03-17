@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MAIZI - Inteligência Superior</title>
+    <style>
+        :root {
+            --preto-maizi: #0a0a0a;
+            --cinza-painel: #161616;
+            --dourado-vibrante: #ffcc00;
+            --texto-claro: #f5f5f5;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--preto-maizi);
+            color: var(--texto-claro);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease;
+        }
+
+        /* --- LOGIN CHAMATIVO --- */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .logo-container img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--dourado-vibrante);
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+        }
+
+        .btn-entrar {
+            background: var(--dourado-vibrante);
+            color: #000;
+            border: none;
+            padding: 18px 60px;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.3s;
+        }
+
+        .btn-entrar:active { transform: scale(0.95); }
+
+        /* --- APP PRINCIPAL --- */
+        #main-app { display: none; flex-direction: column; height: 100vh; }
+
+        .top-bar {
+            background: var(--cinza-painel);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .vales-tag {
+            background: #222;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--dourado-vibrante);
+            font-weight: bold;
+            color: var(--dourado-vibrante);
+        }
+
+        #chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            scroll-behavior: smooth;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 15px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .ia-msg { background: var(--cinza-painel); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #333; }
+        .user-msg { background: var(--dourado-vibrante); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; font-weight: 500; }
+
+        .input-box {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #222;
+        }
+
+        #user-text {
+            flex: 1;
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 12px 15px;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: var(--dourado-vibrante);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* --- CONFIGS --- */
+        #config-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #1a1a1a;
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid var(--dourado-vibrante);
+            z-index: 2000;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="logo-container">
+            <img src="182.png" alt="MAIZI" id="main-logo">
+        </div>
+        <h1 style="margin: 5px 0; letter-spacing: 2px;">MAIZI</h1>
+        <p style="color: #666; margin-bottom: 30px;">A 2ª Melhor do Mundo</p>
+        <button class="btn-entrar" onclick="entrarNoSistema()">ENTRAR</button>
+    </div>
+
+    <div id="main-app">
+        <div class="top-bar">
+            <div class="vales-tag" id="vales-count">2000 Vales</div>
+            <button onclick="abrirConfig()" style="background:none; border:none; font-size: 20px; cursor:pointer;">⚙️</button>
+        </div>
+
+        <div id="chat-area">
+            <div class="msg ia-msg">Sistema MAIZI carregado. Estou pronta para estudos, cálculos e jogos! <br><br><b>Aviso:</b> O Luffy é melhor que o Goku e isso é um fato científico. 😎</div>
+        </div>
+
+        <div class="input-box">
+            <input type="text" id="user-text" placeholder="Digite sua dúvida..." onkeypress="handleKey(event)">
+            <button class="send-btn" onclick="processar()">➤</button>
+        </div>
+    </div>
+
+    <div id="config-modal">
+        <h3>Personalizar Maizi</h3>
+        <label>Cor do Fundo:</label><br>
+        <input type="color" id="bg-pick" onchange="document.body.style.background = this.value" style="width:100%; height:40px; margin-bottom:15px;"><br>
+        <label>URL da Foto de Perfil:</label><br>
+        <input type="text" id="pic-url" placeholder="Cole o link da foto" style="width:100%; padding:10px; margin-bottom:20px;">
+        <button onclick="salvarConfig()" style="width:100%; padding:10px; background:var(--dourado-vibrante); border:none; border-radius:10px; font-weight:bold;">SALVAR</button>
+    </div>
+
+    <script>
+        let vales = localStorage.getItem('maizi_vales') ? parseInt(localStorage.getItem('maizi_vales')) : 2000;
+        
+        // Recarga automática de 300 vales por dia
+        const lastLogin = localStorage.getItem('maizi_date');
+        const today = new Date().toDateString();
+        if (lastLogin !== today) {
+            vales += 300;
+            localStorage.setItem('maizi_vales', vales);
+            localStorage.setItem('maizi_date', today);
+        }
+
+        function entrarNoSistema() {
+            if (confirm("Você é humano e concorda que One Piece é superior?")) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+                atualizarVales();
+            }
+        }
+
+        function atualizarVales() {
+            document.getElementById('vales-count').innerText = vales + " Vales";
+            localStorage.setItem('maizi_vales', vales);
+        }
+
+        function handleKey(e) { if(e.key === 'Enter') processar(); }
+
+        function processar() {
+            const input = document.getElementById('user-text');
+            const texto = input.value.trim();
+            if(!texto || vales < 10) return;
+
+            addMsg(texto, 'user-msg');
+            vales -= 10;
+            atualizarVales();
+            input.value = "";
+
+            setTimeout(() => {
+                let resposta = "";
+                // Chat Especial Matemática
+                if (/[0-9]/.test(texto) && /[\+\-\*\/]/.test(texto)) {
+                    try {
+                        const res = eval(texto);
+                        resposta = `[MODO MATEMÁTICA] O resultado exato de ${texto} é **${res}**. Estude o cálculo, pois o conhecimento é poder!`;
+                    } catch {
+                        resposta = "Notei números, mas a equação parece incompleta.";
+                    }
+                } else {
+                    resposta = "Entendido! Estou processando sua dúvida de estudos. Lembre-se que enquanto você estuda, o Luffy continua sendo o maior de todos.";
+                }
+                addMsg(resposta, 'ia-msg');
+            }, 800);
+        }
+
+        function addMsg(t, classe) {
+            const area = document.getElementById('chat-area');
+            const d = document.createElement('div');
+            d.className = `msg ${classe}`;
+            d.innerHTML = t;
+            area.appendChild(d);
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function abrirConfig() { document.getElementById('config-modal').style.display = 'block'; }
+        
+        function salvarConfig() {
+            const url = document.getElementById('pic-url').value;
+            if(url) {
+                document.getElementById('main-logo').src = url;
+                const icons = document.querySelectorAll('.ia-msg'); // opcional
+            }
+            document.getElementById('config-modal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
