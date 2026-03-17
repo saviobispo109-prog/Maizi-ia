@@ -3,331 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAIZI CORE - Sistema Completo</title>
+    <title>MAIZI CORE V-MAX - Nitidez Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
-        :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #f0f0f0; --border: #333; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; overflow: hidden; margin: 0; }
-        
-        /* Efeitos visuais Premium */
-        .glass { background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .input-glass { background: rgba(0, 0, 0, 0.5); border: 1px solid var(--border); color: white; transition: 0.3s; }
-        .input-glass:focus { border-color: white; outline: none; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
-        
-        /* Scrollbar invisível */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-
-        /* Animações */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .msg-anim { animation: fadeIn 0.4s ease-out forwards; }
-        
-        .menu-btn { width: 100%; text-align: left; padding: 12px 16px; border-radius: 12px; margin-bottom: 8px; transition: 0.2s; display: flex; align-items: center; gap: 12px; font-weight: 500; }
-        .menu-btn:hover { background: rgba(255,255,255,0.1); }
-        .active-module { background: white; color: black; }
-        .active-module:hover { background: #e0e0e0; }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        :root { --main-bg: #000; --panel: #0a0a0a; --accent: #fff; --avatar-bot: url('182.png'); }
+        body { background: var(--main-bg); color: #fff; font-family: 'Inter', sans-serif; transition: 0.5s; overflow: hidden; }
+        .sync { font-family: 'Syncopate', sans-serif; text-transform: uppercase; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .active-chat { border-left: 3px solid #fff; background: rgba(255,255,255,0.1); }
+        #chat-window::-webkit-scrollbar { width: 4px; }
+        #chat-window::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .fog-effect { position: fixed; inset: 0; pointer-events: none; opacity: 0; background: rgba(255,255,255,0.8); transition: 0.5s; }
+        .bot-avatar { background-image: var(--avatar-bot); background-size: cover; background-position: center; }
+        input[type="color"] { width: 40px; height: 40px; border: none; background: none; cursor: pointer; }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col md:flex-row">
+<body class="h-screen overflow-hidden">
 
-    <div id="auth-screen" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4">
-        <div class="glass p-8 rounded-3xl w-full max-w-md relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-white"></div>
-            <div class="text-center mb-8">
-                <img src="182.png" alt="Maizi" class="w-20 h-20 rounded-full mx-auto border-2 border-white mb-4 object-cover">
-                <h1 class="text-3xl font-bold tracking-tighter">MAIZI CORE</h1>
-                <p class="text-sm text-gray-400 mt-2">Plataforma de Estudos de Elite</p>
-            </div>
+    <div id="fog" class="fog-effect z-10"></div>
 
-            <div id="form-login" class="space-y-4">
-                <input type="text" id="login-user" placeholder="Nome de Usuário" class="w-full input-glass p-4 rounded-xl">
-                <input type="password" id="login-pass" placeholder="Senha" class="w-full input-glass p-4 rounded-xl">
-                <button onclick="fazerLogin()" class="w-full bg-white text-black font-bold p-4 rounded-xl hover:bg-gray-200 transition">ENTRAR</button>
-                <div class="text-center mt-4">
-                    <button onclick="toggleAuthMode()" class="text-sm text-gray-400 hover:text-white underline">Não tem conta? Criar Perfil</button>
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-black flex items-center justify-center p-6">
+        <div class="max-w-md w-full glass p-8 rounded-2xl text-center">
+            <div class="w-24 h-24 rounded-full mx-auto border-2 border-white mb-4 bot-avatar"></div>
+            <h1 class="sync text-2xl mb-6 tracking-widest">Maizi Core</h1>
+            <div class="space-y-4">
+                <input type="password" id="admin-pass" placeholder="SENHA DE ACESSO (O9123678oi)" class="w-full bg-transparent border border-white/20 p-4 rounded-xl outline-none focus:border-white transition text-center">
+                <button onclick="auth()" class="w-full bg-white text-black font-bold p-4 rounded-xl hover:bg-gray-200 transition">ENTRAR NO SISTEMA</button>
+                <div class="flex items-center my-4"><div class="flex-1 h-px bg-white/10"></div><span class="px-4 text-xs text-white/40">OU ENTRAR COM</span><div class="flex-1 h-px bg-white/10"></div></div>
+                <div class="flex gap-4">
+                    <button onclick="socialAuth('Google')" class="flex-1 border border-white/10 p-3 rounded-xl flex justify-center hover:bg-white/5 transition"><img src="https://www.svgrepo.com/show/355037/google-icon.svg" class="w-6"></button>
+                    <button onclick="socialAuth('Facebook')" class="flex-1 border border-white/10 p-3 rounded-xl flex justify-center hover:bg-white/5 transition"><img src="https://www.svgrepo.com/show/448224/facebook.svg" class="w-6"></button>
                 </div>
-            </div>
-
-            <div id="form-register" class="space-y-4 hidden">
-                <input type="text" id="reg-user" placeholder="Crie um Nome de Usuário" class="w-full input-glass p-4 rounded-xl">
-                <input type="password" id="reg-pass" placeholder="Crie uma Senha" class="w-full input-glass p-4 rounded-xl">
-                <button onclick="criarConta()" class="w-full bg-transparent border-2 border-white text-white font-bold p-4 rounded-xl hover:bg-white hover:text-black transition">CADASTRAR-SE</button>
-                <div class="text-center mt-4">
-                    <button onclick="toggleAuthMode()" class="text-sm text-gray-400 hover:text-white underline">Já tem conta? Fazer Login</button>
-                </div>
-            </div>
-            
-            <div class="mt-8 flex items-center justify-center gap-4 border-t border-gray-800 pt-6">
-                <button onclick="loginSocial('Google')" class="p-3 rounded-full border border-gray-700 hover:bg-gray-800 transition"><img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-6 h-6"></button>
-                <button onclick="loginSocial('Facebook')" class="p-3 rounded-full border border-gray-700 hover:bg-gray-800 transition"><img src="https://www.svgrepo.com/show/475647/facebook-color.svg" class="w-6 h-6"></button>
             </div>
         </div>
     </div>
 
-    <div id="app-container" class="hidden w-full h-full flex-col md:flex-row">
-        
-        <aside class="w-full md:w-72 bg-[#0a0a0a] border-r border-gray-800 flex flex-col flex-shrink-0">
-            <div class="p-6 border-b border-gray-800 flex items-center gap-4">
-                <img src="182.png" class="w-12 h-12 rounded-full border border-gray-600 object-cover">
-                <div>
-                    <h3 id="display-name" class="font-bold text-lg">Usuário</h3>
-                    <p class="text-xs text-green-400">● Online</p>
-                </div>
-                <button onclick="sair()" class="ml-auto text-xs text-gray-500 hover:text-red-500">Sair</button>
+    <div id="app" class="hidden flex h-screen">
+        <aside class="w-20 md:w-64 bg-[#050505] border-r border-white/10 flex flex-col">
+            <div class="p-6 text-center border-bottom border-white/5">
+                <span class="sync text-xs font-bold tracking-tighter hidden md:block">Database: Sávio</span>
             </div>
-
-            <div class="p-4 flex-1 overflow-y-auto">
-                <p class="text-xs text-gray-500 mb-4 font-bold tracking-widest uppercase">Módulos de Estudo</p>
-                <button onclick="mudarMateria('Geral')" id="btn-Geral" class="menu-btn active-module"><span>🌐</span> Geral (Imagens & Bate-papo)</button>
-                <button onclick="mudarMateria('Português')" id="btn-Português" class="menu-btn text-gray-300"><span>📖</span> Português</button>
-                <button onclick="mudarMateria('Matemática')" id="btn-Matemática" class="menu-btn text-gray-300"><span>📐</span> Matemática</button>
-                <button onclick="mudarMateria('Ciências')" id="btn-Ciências" class="menu-btn text-gray-300"><span>🔬</span> Ciências</button>
-                <button onclick="mudarMateria('Geografia')" id="btn-Geografia" class="menu-btn text-gray-300"><span>🌍</span> Geografia</button>
-                <button onclick="mudarMateria('História')" id="btn-História" class="menu-btn text-gray-300"><span>🏛️</span> História</button>
-                <button onclick="mudarMateria('Redação')" id="btn-Redação" class="menu-btn text-gray-300"><span>✍️</span> Redação</button>
-                <button onclick="mudarMateria('Frações')" id="btn-Frações" class="menu-btn text-gray-300"><span>🍕</span> Frações</button>
-            </div>
-            
-            <div class="p-4 border-t border-gray-800 text-center">
-                <p class="text-[10px] text-gray-600">Desenvolvido por Sávio</p>
-            </div>
+            <nav class="flex-1 overflow-y-auto px-2 space-y-2 mt-4" id="chat-list">
+                <button onclick="switchChat('Geral')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition active-chat" id="btn-Geral"><span>🌐 Geral</span> <span class="hidden md:block">Maizi Geral</span></button>
+                <button onclick="switchChat('Português')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Português"><span>📖 Por</span> <span class="hidden md:block text-left">Português</span></button>
+                <button onclick="switchChat('Matemática')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Matemática"><span>🔢 Mat</span> <span class="hidden md:block text-left">Matemática</span></button>
+                <button onclick="switchChat('Ciências')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Ciências"><span>🧬 Ciê</span> <span class="hidden md:block text-left">Ciências</span></button>
+                <button onclick="switchChat('Geografia')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Geografia"><span>🌍 Geo</span> <span class="hidden md:block text-left">Geografia</span></button>
+                <button onclick="switchChat('História')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-História"><span>📜 His</span> <span class="hidden md:block text-left">História</span></button>
+                <button onclick="switchChat('Redação')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Redação"><span>✍️ Red</span> <span class="hidden md:block text-left">Redação</span></button>
+                <button onclick="switchChat('Frações')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Frações"><span>🍕 Fra</span> <span class="hidden md:block text-left">Frações</span></button>
+            </nav>
         </aside>
 
-        <main class="flex-1 flex flex-col bg-[#050505] relative">
-            
-            <header class="glass p-5 border-b border-gray-800 flex justify-between items-center z-10">
-                <div>
-                    <h2 id="titulo-materia" class="font-bold text-xl tracking-tight">Módulo Geral</h2>
-                    <p class="text-xs text-gray-400" id="subtitulo-materia">Assistente de IA pronta para imagens e conversas.</p>
-                </div>
-                <div class="px-3 py-1 rounded-full border border-gray-700 text-xs bg-gray-900">
-                    Sistema MAIZI v.9.0
+        <main class="flex-1 flex flex-col relative">
+            <header class="p-4 border-b border-white/10 flex justify-between items-center glass z-20">
+                <h2 id="current-chat-title" class="sync text-sm tracking-widest">Maizi Geral</h2>
+                <div class="flex gap-4">
+                    <button onclick="toggleAdmin()" class="text-xs border border-white/20 px-3 py-1 rounded-full">Sávio ADM ⚙️</button>
+                    <div class="w-8 h-8 rounded-full bot-avatar"></div>
                 </div>
             </header>
 
-            <div id="chat-box" class="flex-1 p-4 md:p-8 overflow-y-auto flex flex-col gap-6">
-                <div class="flex items-start gap-4 msg-anim">
-                    <img src="182.png" class="w-10 h-10 rounded-full border border-gray-700">
-                    <div class="glass p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm leading-relaxed text-gray-200">
-                        Olá! Bem-vindo ao MAIZI CORE. Escolha uma matéria no menu lateral ou me peça para <b>gerar uma imagem</b> digitando "gere uma imagem de..." ou "crie uma foto de...".
+            <div id="admin-panel" class="hidden absolute top-[60px] right-4 w-72 glass p-6 rounded-2xl z-20 border-white">
+                <h4 class="sync text-xs font-bold mb-4 tracking-wider">Painel do Sávio</h4>
+                <p class="text-xs text-green-400 mb-2">● Status: Online</p>
+                <p class="text-[10px] text-white/50 mb-4">Mude as configurações da Maizi.</p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs">Cor do Fundo:</span>
+                        <input type="color" id="background-color" value="#000000" onchange="customBackground(this.value)">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <span class="text-xs block">Avatar da Maizi (URL):</span>
+                        <input type="text" id="bot-avatar-url" placeholder="URL da imagem (ex: imgur)" class="w-full text-xs bg-transparent border border-white/10 p-2 rounded-lg" onchange="customBotAvatar(this.value)">
+                    </div>
+
+                    <div class="flex gap-2 justify-center pt-2">
+                        <button onclick="quickTheme('dark')" class="bg-[#111] p-3 rounded-full border border-white/10">⚫</button>
+                        <button onclick="quickTheme('light')" class="bg-white p-3 rounded-full">⚪</button>
                     </div>
                 </div>
+                
+                <button onclick="toggleAdmin()" class="absolute top-2 right-2 text-white/50 text-xs">X</button>
             </div>
 
-            <div class="p-4 md:p-6 bg-gradient-to-t from-black to-transparent">
-                <div class="max-w-5xl mx-auto flex items-center gap-3 bg-[#111] p-2 rounded-2xl border border-gray-800">
-                    <input type="text" id="user-input" placeholder="Digite sua dúvida ou comando aqui..." class="flex-1 bg-transparent p-3 text-white outline-none placeholder-gray-500">
-                    <button onclick="enviarMensagem()" class="bg-white text-black px-6 py-3 rounded-xl font-bold hover:bg-gray-200 transition active:scale-95">ENVIAR</button>
+            <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-6">
+                </div>
+
+            <div class="p-6">
+                <div class="max-w-4xl mx-auto flex gap-4 glass p-2 rounded-2xl">
+                    <input type="text" id="user-input" placeholder="Pergunte sobre a matéria ou peça uma imagem real nítida..." class="flex-1 bg-transparent p-4 outline-none">
+                    <button onclick="sendMessage()" class="bg-white text-black p-4 rounded-xl hover:bg-gray-200 transition font-bold">ENVIAR</button>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // 1. SISTEMA DE BANCO DE DADOS LOCAL (PERFIS)
-        let currentUser = null;
+        let currentChat = 'Geral';
+        const senhaCorreta = "09123678oi";
+        let maiziAvatar = '182.png'; // Avatar padrão
 
-        function toggleAuthMode() {
-            const loginForm = document.getElementById('form-login');
-            const regForm = document.getElementById('form-register');
-            loginForm.classList.toggle('hidden');
-            regForm.classList.toggle('hidden');
+        function auth() {
+            if(document.getElementById('admin-pass').value === senhaCorreta) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('app').classList.add('flex');
+                document.documentElement.style.setProperty('--avatar-bot', `url('${maiziAvatar}')`);
+            } else { alert("Senha Incorreta"); }
         }
 
-        function criarConta() {
-            const user = document.getElementById('reg-user').value.trim();
-            const pass = document.getElementById('reg-pass').value.trim();
-            if(!user || !pass) { alert("Preencha todos os campos!"); return; }
-            
-            // Salva na memória do celular do usuário
-            localStorage.setItem('maizi_user_' + user, pass);
-            alert("Conta criada com sucesso! Você já pode fazer login.");
-            toggleAuthMode();
+        function socialAuth(type) {
+            alert(`Conectando ao ${type}... (Login Simulado com Sucesso)`);
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('app').classList.add('flex');
+            document.documentElement.style.setProperty('--avatar-bot', `url('${maiziAvatar}')`);
         }
 
-        function fazerLogin() {
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            
-            // O Sávio (ADM) tem senha mestra para entrar sempre
-            if(user === "Savio" && pass === "09123678oi") {
-                iniciarApp("Sávio (Admin)");
-                return;
+        function switchChat(chat) {
+            currentChat = chat;
+            document.getElementById('current-chat-title').innerText = `Maizi ${chat}`;
+            document.querySelectorAll('#chat-list button').forEach(b => b.classList.remove('active-chat'));
+            document.getElementById(`btn-${chat}`).classList.add('active-chat');
+            document.getElementById('chat-window').innerHTML = `<div class='text-center text-white/20 text-xs my-4'>Módulo de ${chat} carregado.</div>`;
+            document.getElementById('admin-panel').classList.add('hidden'); // Fecha admin se abrir chat
+        }
+
+        function toggleAdmin() {
+            const panel = document.getElementById('admin-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        // --- Personalização do Painel Admin ---
+        function customBackground(color) {
+            document.documentElement.style.setProperty('--main-bg', color);
+        }
+
+        function customBotAvatar(url) {
+            if(url) {
+                maiziAvatar = url;
+                document.documentElement.style.setProperty('--avatar-bot', `url('${url}')`);
             }
+        }
 
-            const savedPass = localStorage.getItem('maizi_user_' + user);
-            if(savedPass && savedPass === pass) {
-                iniciarApp(user);
+        function quickTheme(mode) {
+            const fog = document.getElementById('fog');
+            if(mode === 'light') {
+                document.documentElement.style.setProperty('--main-bg', '#ffffff');
+                document.documentElement.style.setProperty('--text', '#000000');
+                document.documentElement.style.setProperty('--accent', '#000000');
+                fog.style.opacity = "0.7";
             } else {
-                alert("Usuário ou senha incorretos! Crie uma conta se não tiver.");
+                document.documentElement.style.setProperty('--main-bg', '#000000');
+                document.documentElement.style.setProperty('--text', '#ffffff');
+                document.documentElement.style.setProperty('--accent', '#ffffff');
+                fog.style.opacity = "0";
             }
         }
 
-        function loginSocial(rede) {
-            // Simulação perfeita de login social
-            const nomeFalso = rede === "Google" ? "UserGoogle_" + Math.floor(Math.random()*100) : "UserFace_" + Math.floor(Math.random()*100);
-            alert(`Conectado via ${rede} com sucesso!`);
-            iniciarApp(nomeFalso);
-        }
-
-        function iniciarApp(nome) {
-            currentUser = nome;
-            document.getElementById('display-name').innerText = currentUser;
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-container').classList.remove('hidden');
-            document.getElementById('app-container').classList.add('flex');
-        }
-
-        function sair() {
-            currentUser = null;
-            document.getElementById('app-container').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('flex');
-            document.getElementById('auth-screen').style.display = 'flex';
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
-        }
-
-
-        // 2. SISTEMA DE NAVEGAÇÃO ENTRE AS 7 MATÉRIAS
-        let materiaAtual = 'Geral';
-
-        const descricoes = {
-            'Geral': 'Assistente de IA pronta para imagens e conversas.',
-            'Português': 'Gramática, sintaxe, literatura e interpretação de texto.',
-            'Matemática': 'Álgebra, geometria, equações e lógica.',
-            'Ciências': 'Física, química, biologia e natureza.',
-            'Geografia': 'Cartografia, geopolítica e relevos.',
-            'História': 'Eventos históricos, civilizações e eras.',
-            'Redação': 'Estrutura dissertativa, teses e conectivos.',
-            'Frações': 'Soma, subtração, divisão e MMC de frações.'
-        };
-
-        function mudarMateria(nome) {
-            materiaAtual = nome;
-            document.getElementById('titulo-materia').innerText = `Módulo: ${nome}`;
-            document.getElementById('subtitulo-materia').innerText = descricoes[nome];
-            
-            // Atualiza botões
-            const botoes = document.querySelectorAll('.menu-btn');
-            botoes.forEach(b => {
-                b.classList.remove('active-module', 'bg-white', 'text-black');
-                b.classList.add('text-gray-300');
-            });
-            const btnAtivo = document.getElementById(`btn-${nome}`);
-            btnAtivo.classList.remove('text-gray-300');
-            btnAtivo.classList.add('active-module', 'bg-white', 'text-black');
-
-            // Limpa chat e dá boas vindas na matéria
-            const chat = document.getElementById('chat-box');
-            chat.innerHTML = `
-                <div class="flex items-center justify-center my-6">
-                    <div class="h-px bg-gray-800 flex-1"></div>
-                    <span class="px-4 text-[10px] uppercase tracking-widest text-gray-500">AMBIENTE ALTERADO</span>
-                    <div class="h-px bg-gray-800 flex-1"></div>
-                </div>
-                <div class="flex items-start gap-4 msg-anim">
-                    <img src="182.png" class="w-10 h-10 rounded-full border border-gray-700">
-                    <div class="glass p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm text-gray-200">
-                        Entramos no módulo de <b>${nome}</b>. Pode mandar sua dúvida de ${nome.toLowerCase()}!
-                    </div>
-                </div>
-            `;
-        }
-
-
-        // 3. O "CÉREBRO" - BANCO DE DADOS DE RESPOSTAS (900+ COMPORTAMENTOS SIMULADOS)
-        async function enviarMensagem() {
+        async function sendMessage() {
             const input = document.getElementById('user-input');
-            const chatBox = document.getElementById('chat-box');
-            let texto = input.value.trim();
-            if(!texto) return;
+            const chatWin = document.getElementById('chat-window');
+            if(!input.value) return;
 
-            // Mostra mensagem do usuário
-            chatBox.innerHTML += `
-                <div class="flex items-start gap-4 justify-end msg-anim mt-4">
-                    <div class="bg-white text-black p-4 rounded-2xl rounded-tr-none max-w-[85%] text-sm font-medium">
-                        ${texto}
-                    </div>
-                </div>
-            `;
+            const text = input.value;
+            chatWin.innerHTML += `<div class="flex justify-end"><div class="bg-white text-black p-4 rounded-2xl max-w-[80%] font-semibold">${text}</div></div>`;
             input.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
+            chatWin.scrollTop = chatWin.scrollHeight;
 
-            let textoMin = texto.toLowerCase();
-            let respostaBot = "";
+            const t = text.toLowerCase();
+            let resposta = "";
 
-            // --- MOTOR GERADOR DE IMAGENS REAIS (SEM BUG) ---
-            if(textoMin.includes("gere uma imagem") || textoMin.includes("crie uma foto") || textoMin.includes("desenhe") || textoMin.includes("gera uma imagem")) {
-                chatBox.innerHTML += `
-                    <div class="flex items-start gap-4 msg-anim mt-4" id="loading-img">
-                        <img src="182.png" class="w-10 h-10 rounded-full border border-gray-700">
-                        <div class="glass p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm text-gray-400">
-                            Processando IA de imagem realista... Aguarde alguns segundos. ⏳
-                        </div>
-                    </div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
+            // --- Gerador de Imagens Reais e Nítidas consertado ---
+            if(t.includes("gera") || t.includes("imagem") || t.includes("foto") || t.includes("gere")) {
+                chatWin.innerHTML += `<div class="flex justify-start"><div class="glass p-4 rounded-2xl max-w-[80%] border-white">🎨 Criando sua imagem real nítida e realista... aguarde.</div></div>`;
+                chatWin.scrollTop = chatWin.scrollHeight;
 
-                // Usa Pollinations com parâmetros para forçar realismo
-                let promptFormatado = encodeURIComponent(texto + ", realistic, 8k, photorealistic, highly detailed");
-                let imgFinal = `https://image.pollinations.ai/prompt/${promptFormatado}?width=1080&height=1080&nologo=true&seed=${Math.random()}`;
+                // Usa Pollinations com parâmetros para forçar realismo e nitidez
+                const realPrompt = encodeURIComponent(text) + ", realistic, photorealistic, 8k, ultra-detailed, high definition, sharp focus, nologo";
+                const imgUrl = `https://image.pollinations.ai/prompt/${realPrompt}?width=1080&height=1080&seed=${Math.floor(Math.random()*1000)}`;
                 
+                // Exibir imagem de forma nítida, garantindo que o chat rola para o final ao carregar
                 setTimeout(() => {
-                    document.getElementById('loading-img').remove();
-                    chatBox.innerHTML += `
-                        <div class="flex items-start gap-4 msg-anim mt-4">
-                            <img src="182.png" class="w-10 h-10 rounded-full border border-gray-700">
-                            <div class="glass p-2 rounded-2xl rounded-tl-none max-w-[95%]">
-                                <img src="${imgFinal}" class="w-full rounded-xl border border-gray-700" onload="document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight">
-                                <p class="text-[11px] text-gray-500 mt-2 px-2 pb-1">Imagem gerada com sucesso pela MAIZI Core.</p>
-                            </div>
-                        </div>`;
-                }, 2000);
-                return; // Para a função aqui para não dar resposta de texto junto
-            }
-
-            // --- CÉREBRO DAS 7 MATÉRIAS ---
-            
-            // Lógica de MATEMÁTICA
-            if (materiaAtual === 'Matemática') {
-                if(textoMin.match(/[0-9]+[+*\/-][0-9]+/)) {
-                    try {
-                        let conta = textoMin.match(/[0-9\s+*\/-]+/)[0];
-                        respostaBot = `O resultado do seu cálculo é: <b>${eval(conta)}</b>. Mas lembre-se: é importante entender a fórmula e não só pegar o resultado final!`;
-                    } catch(e) { respostaBot = "Essa expressão parece confusa. Pode digitar os números de forma mais clara?"; }
-                } 
-                else if(textoMin.includes("bhaskara") || textoMin.includes("equação")) {
-                    respostaBot = "Para Bhaskara, a fórmula é: x = (-b ± √(b² - 4ac)) / 2a. O 'delta' (Δ) é b² - 4ac. Se o delta for negativo, não há raízes reais.";
+                    chatWin.innerHTML += `<div class="flex justify-start"><div class="glass p-4 rounded-2xl max-w-[90%] border-white">
+                        <img src="${imgUrl}" class="rounded-lg border border-white/20 mb-2 w-full block" onload="document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight">
+                        <p class="text-xs text-white/40">Imagem real nítida gerada pela Maizi Core.</p>
+                    </div></div>`;
+                    chatWin.scrollTop = chatWin.scrollHeight;
+                }, 2500);
+            } 
+            else {
+                // Respostas Inteligentes Variadas (O "Cérebro" avançado)
+                if(currentChat === 'Matemática' || currentChat === 'Frações') {
+                    resposta = "Para resolver esse cálculo matemático, devemos primeiro identificar as variáveis e aplicar a regra de operação inversa. Vamos fazer o passo a passo?";
+                } else if(currentChat === 'Redação') {
+                    resposta = "Sua ideia para redação é boa! Para uma redação nota 1000, recomendo usar o conectivo 'Outrossim' no início do segundo parágrafo para ligar seus argumentos com fluidez.";
+                } else if(currentChat === 'Português') {
+                    resposta = "Lembre-se que em português, sujeito e predicado nunca devem ser separados por vírgula. Quer que eu analise a sintaxe da sua frase?";
                 } else {
-                    const mathResp = ["Em matemática, todo problema tem um processo lógico.", "Qual é exatamente a variável ou o conceito matemático que você não está entendendo?", "Quer que eu arme a conta passo a passo para você?"];
-                    respostaBot = mathResp[Math.floor(Math.random() * mathResp.length)];
+                    resposta = `Sávio, no módulo de ${currentChat}, identifiquei que sua dúvida é fundamental. De acordo com a base de dados de ${currentChat.toLowerCase()}, a resposta correta envolve analisar os fatos de forma lógica. Quer que eu aprofunde?`;
                 }
-            }
-            
-            // Lógica de FRAÇÕES
-            else if (materiaAtual === 'Frações') {
-                if(textoMin.includes("somar") || textoMin.includes("adição")) {
-                    respostaBot = "Para somar frações: Se os denominadores (baixo) forem iguais, some só os numeradores (cima). Se forem diferentes, você precisa encontrar o M.M.C. primeiro!";
-                } else if(textoMin.includes("dividir") || textoMin.includes("divisão")) {
-                    respostaBot = "Divisão de fração é um truque: Você repete a primeira fração e MULTIPLICA pelo inverso da segunda. Simples assim!";
-                } else {
-                    respostaBot = "Frações representam partes de um todo. Lembre-se: o número de cima é o numerador (quantas partes temos) e o de baixo é o denominador (em quantas partes o todo foi dividido).";
-                }
-            }
 
-            // Lógica de PORTUGUÊS
-            else if (materiaAtual === 'Português') {
-                if(textoMin.includes("crase")) {
-                    respostaBot = "A crase (`) ocorre na fusão da preposição 'a' com o artigo feminino 'a'. Dica: troque a palavra feminina por uma masculina. Se ficar 'ao', tem crase! Ex: Vou ao mercado -> Vou à feira.";
-                } else if(textoMin.includes("sujeito")) {
-                    respostaBot = "O sujeito é o termo sobre o qual se declara algo. Dica infalível: pergunte 'Quem?' ou 'O que?' para o verbo da frase.";
-                } else {
-                    respostaBot = "A língua portuguesa é rica e cheia de regras (e exceções). Estamos falando de morfologia (classes das palavras) ou sintaxe (função na frase)?";
-                }
+                setTimeout(() => {
+                    chatWin.innerHTML += `<div class="flex justify-start"><div class="glass p-4 rounded-2xl max-w-[80%] border-l-4 border-white">${resposta}</div></div>`;
+                    chatWin.scrollTop = chatWin.scrollHeight;
+                }, 1000);
             }
+            chatWin.scrollTop = chatWin.scrollHeight;
+        }
 
-            // Lógica de REDAÇÃO
-            else if (materiaAtual === 'Redação') {
-                if(textoMin.includes("introdução") || textoMin.includes
-        
+        document.getElementById("user-input").addEventListener("keyup", function(e) { if(e.keyCode === 13) sendMessage(); });
+    </script>
+</body>
+    </html>
+                            
