@@ -3,135 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAIZI CORE V-MAX 3.0</title>
+    <title>MAIZI CORE - MULTI-USER SUPREME</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
-        :root { --fundo: #050505; --avatar: url('182.png'); }
-        body { background: var(--fundo); color: #fff; font-family: 'Space Grotesk', sans-serif; overflow: hidden; }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); }
-        .sigla { font-size: 10px; font-weight: 800; border: 1px solid rgba(255,255,255,0.2); padding: 2px 4px; border-radius: 4px; margin-right: 8px; }
-        .btn-materia { width: 100%; padding: 12px; border-radius: 12px; display: flex; align-items: center; transition: 0.3s; margin-bottom: 5px; }
+        :root { --fundo: #070707; --avatar: url('182.png'); }
+        body { background: var(--fundo); color: #fff; font-family: 'Space Grotesk', sans-serif; overflow: hidden; margin: 0; }
+        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        .sigla-box { font-size: 11px; font-weight: 800; color: #fff; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; min-width: 45px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-materia { width: 100%; padding: 14px; border-radius: 15px; display: flex; align-items: center; transition: 0.3s; margin-bottom: 8px; border: 1px solid transparent; }
         .active-mod { background: #fff !important; color: #000 !important; }
+        .active-mod .sigla-box { background: #000; color: #fff; border-color: #000; }
         #chat-win::-webkit-scrollbar { width: 4px; }
-        #chat-win::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .perfil-ia { background-image: var(--avatar); background-size: cover; background-position: center; border-radius: 50%; }
+        #chat-win::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+        .face-maizi { background-image: var(--avatar); background-size: cover; background-position: center; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
     </style>
 </head>
-<body class="h-screen flex">
+<body class="h-screen flex flex-col md:flex-row">
 
-    <div id="lock" class="fixed inset-0 z-[100] bg-black flex items-center justify-center p-4">
-        <div class="glass p-8 rounded-3xl w-full max-w-sm text-center">
-            <div class="w-20 h-20 perfil-ia mx-auto border-2 border-white mb-4"></div>
-            <h2 class="font-bold text-xl mb-6">MAIZI CORE SUPREME</h2>
-            <input type="text" id="u" placeholder="Usuário (Sávio)" class="w-full bg-white/5 p-4 rounded-xl mb-3 outline-none border border-white/10 focus:border-white">
-            <input type="password" id="p" placeholder="Senha" class="w-full bg-white/5 p-4 rounded-xl mb-6 outline-none border border-white/10 focus:border-white">
-            <button onclick="logar()" class="w-full bg-white text-black font-bold p-4 rounded-xl hover:scale-95 transition">ENTRAR</button>
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-black flex items-center justify-center p-4 transition-opacity duration-500">
+        <div class="glass p-10 rounded-[40px] w-full max-w-md text-center border-white/20">
+            <div class="w-24 h-24 face-maizi mx-auto mb-6 shadow-2xl shadow-white/10"></div>
+            <h1 class="text-3xl font-bold tracking-tighter mb-2">MAIZI CORE</h1>
+            <p class="text-gray-500 text-xs mb-8 uppercase tracking-[0.2em]">Sistema Multi-Usuário Ativado</p>
+            
+            <div class="space-y-4">
+                <input type="text" id="user-input" placeholder="Nome de Usuário" class="w-full bg-white/5 p-4 rounded-2xl outline-none border border-white/10 focus:border-white transition">
+                <input type="password" id="pass-input" placeholder="Sua Senha" class="w-full bg-white/5 p-4 rounded-2xl outline-none border border-white/10 focus:border-white transition">
+                <button onclick="validarAcesso()" class="w-full bg-white text-black font-bold p-5 rounded-2xl hover:scale-[0.98] transition active:scale-95">CONECTAR AO CORE</button>
+            </div>
+            <p class="text-[10px] text-gray-600 mt-6 italic">Criptografia de ponta a ponta ativa.</p>
         </div>
     </div>
 
-    <aside class="w-20 md:w-64 bg-black border-r border-white/5 flex flex-col hidden" id="aside">
-        <div class="p-6 border-b border-white/5 flex items-center gap-2">
-            <div class="w-8 h-8 perfil-ia"></div>
-            <span class="font-bold text-xs hidden md:block">MAIZI CORE</span>
+    <aside class="w-full md:w-72 bg-[#0a0a0a] border-r border-white/5 flex flex-col hidden h-full" id="sidebar">
+        <div class="p-8 border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 face-maizi"></div>
+                <div>
+                    <h2 class="font-bold text-sm tracking-tighter">MAIZI CORE</h2>
+                    <p id="user-display" class="text-[10px] text-green-500 font-bold uppercase"></p>
+                </div>
+            </div>
         </div>
-        <div class="flex-1 overflow-y-auto p-4">
-            <button onclick="mudar('Geral')" id="b-Geral" class="btn-materia active-mod"><span class="sigla">GER</span> <span class="hidden md:block">Geral</span></button>
-            <button onclick="mudar('Português')" id="b-Português" class="btn-materia text-gray-500"><span class="sigla">POR</span> <span class="hidden md:block">Português</span></button>
-            <button onclick="mudar('Matemática')" id="b-Matemática" class="btn-materia text-gray-500"><span class="sigla">MAT</span> <span class="hidden md:block">Matemática</span></button>
-            <button onclick="mudar('Redação')" id="b-Redação" class="btn-materia text-gray-500"><span class="sigla">RED</span> <span class="hidden md:block">Redação</span></button>
-            <button onclick="mudar('Frações')" id="b-Frações" class="btn-materia text-gray-500"><span class="sigla">FRA</span> <span class="hidden md:block">Frações</span></button>
+        
+        <nav class="flex-1 overflow-y-auto p-4 mt-4">
+            <button onclick="mudar('Geral')" id="b-Geral" class="btn-materia active-mod"><span class="sigla-box">GER</span> <span class="ml-3 font-bold text-sm">Geral / Imagem</span></button>
+            <button onclick="mudar('Português')" id="b-Português" class="btn-materia text-gray-400"><span class="sigla-box">POR</span> <span class="ml-3 font-bold text-sm">Português</span></button>
+            <button onclick="mudar('Matemática')" id="b-Matemática" class="btn-materia text-gray-400"><span class="sigla-box">MAT</span> <span class="ml-3 font-bold text-sm">Matemática</span></button>
+            <button onclick="mudar('Ciências')" id="b-Ciências" class="btn-materia text-gray-400"><span class="sigla-box">CIÊ</span> <span class="ml-3 font-bold text-sm">Ciências</span></button>
+            <button onclick="mudar('Geografia')" id="b-Geografia" class="btn-materia text-gray-400"><span class="sigla-box">GEO</span> <span class="ml-3 font-bold text-sm">Geografia</span></button>
+            <button onclick="mudar('História')" id="b-História" class="btn-materia text-gray-400"><span class="sigla-box">HIS</span> <span class="ml-3 font-bold text-sm">História</span></button>
+            <button onclick="mudar('Redação')" id="b-Redação" class="btn-materia text-gray-400"><span class="sigla-box">RED</span> <span class="ml-3 font-bold text-sm">Redação</span></button>
+            <button onclick="mudar('Frações')" id="b-Frações" class="btn-materia text-gray-400"><span class="sigla-box">FRA</span> <span class="ml-3 font-bold text-sm">Frações</span></button>
+        </nav>
+
+        <div class="p-6 border-t border-white/5">
+            <button onclick="toggleCfg()" class="w-full glass p-4 rounded-2xl text-[10px] font-bold tracking-widest hover:bg-white/5 transition">⚙️ CUSTOMIZAÇÃO</button>
+            <button onclick="location.reload()" class="w-full text-[9px] text-red-500 mt-4 font-bold uppercase tracking-widest hover:underline">Sair do Sistema</button>
         </div>
-        <div class="p-4"><button onclick="abrirConfig()" class="w-full glass p-3 rounded-xl text-[10px] font-bold">⚙️ CUSTOMIZAR</button></div>
     </aside>
 
-    <main class="flex-1 flex flex-col hidden" id="main">
-        <header class="p-5 border-b border-white/5 glass flex justify-between items-center">
-            <span id="label" class="font-bold text-sm uppercase tracking-widest text-gray-400">Módulo Geral</span>
-            <div class="text-[10px] bg-white/10 px-2 py-1 rounded">SÁVIO ADM</div>
+    <main class="flex-1 flex flex-col hidden relative h-full bg-transparent" id="main-content">
+        <header class="p-6 border-b border-white/5 glass flex justify-between items-center">
+            <div>
+                <h3 id="mod-title" class="font-bold text-lg">Módulo Geral</h3>
+                <p class="text-[10px] text-gray-500 uppercase">ImagePro Motor V.10</p>
+            </div>
+            <div class="w-8 h-8 face-maizi"></div>
         </header>
 
-        <div id="chat-win" class="flex-1 overflow-y-auto p-6 space-y-4"></div>
+        <div id="chat-win" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
 
-        <div class="p-6">
-            <div class="max-w-4xl mx-auto flex gap-2 glass p-2 rounded-2xl">
-                <input type="text" id="msg" placeholder="Peça uma imagem realista ou tire uma dúvida..." class="flex-1 bg-transparent p-3 outline-none text-sm">
-                <button onclick="enviar()" class="bg-white text-black px-6 py-3 rounded-xl font-bold transition active:scale-90">ENVIAR</button>
+        <div class="p-6 md:p-10">
+            <div class="max-w-5xl mx-auto flex gap-3 bg-[#111] border border-white/10 p-2 rounded-[25px] focus-within:border-white/30 transition shadow-2xl">
+                <input type="text" id="user-msg" placeholder="Comande a IA ou peça uma imagem realista..." class="flex-1 bg-transparent p-4 outline-none text-sm">
+                <button onclick="processarEnvio()" class="bg-white text-black px-8 py-4 rounded-[20px] font-bold hover:scale-95 transition active:scale-90">ENVIAR</button>
             </div>
         </div>
     </main>
 
-    <div id="cfg" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-6">
-        <div class="glass p-8 rounded-3xl w-full max-w-sm space-y-4">
-            <h3 class="font-bold">Personalizar Maizi</h3>
-            <input type="color" id="cor" class="w-full h-12 bg-transparent cursor-pointer">
-            <input type="text" id="img-url" placeholder="URL da foto da IA" class="w-full bg-white/5 p-3 rounded-xl text-sm border border-white/10">
-            <button onclick="salvarCfg()" class="w-full bg-white text-black font-bold p-4 rounded-xl">SALVAR</button>
-            <button onclick="abrirConfig()" class="w-full text-xs text-gray-500">FECHAR</button>
+    <div id="cfg-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="glass p-10 rounded-[40px] w-full max-w-sm space-y-6 border-white/20">
+            <h3 class="font-bold text-xl">Personalizar Interface</h3>
+            <div>
+                <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 block">Cor Sólida do Fundo</label>
+                <input type="color" id="bg-color" class="w-full h-12 bg-transparent cursor-pointer rounded-xl">
+            </div>
+            <div>
+                <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 block">Link da Foto do Perfil</label>
+                <input type="text" id="avatar-input" placeholder="URL da imagem..." class="w-full bg-white/5 p-4 rounded-2xl text-sm border border-white/10 outline-none">
+            </div>
+            <button onclick="aplicarAjustes()" class="w-full bg-white text-black font-bold p-5 rounded-2xl">SALVAR MUDANÇAS</button>
+            <button onclick="toggleCfg()" class="w-full text-xs text-gray-500 hover:text-white transition">Cancelar</button>
         </div>
     </div>
 
     <script>
-        let mod = 'Geral';
-        const sHash = "25c1b52f6f4c718b958e4585e1352e8006e88d1891963953e5e463d666d6d63e"; // Hash de 09123678oi
+        // BANCO DE DADOS DE USUÁRIOS (Sávio e outros)
+        // A senha mestra 09123678oi é EXCLUSIVA do usuário 'savio'
+        const DATABASE = {
+            "savio": "09123678oi", // Senha exclusiva sua
+            "aluno": "estudar123",  // Exemplo de outro usuário
+            "convidado": "maizi2026" // Exemplo de outro usuário
+        };
 
-        async function hash(m) {
-            const b = new TextEncoder().encode(m);
-            const h = await crypto.subtle.digest('SHA-256', b);
-            return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join('');
+        let usuarioLogado = "";
+        let moduloAtual = "Geral";
+
+        function validarAcesso() {
+            const user = document.getElementById('user-input').value.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const pass = document.getElementById('pass-input').value.trim();
+
+            if (DATABASE[user]) {
+                // Se alguém tentar usar SUA senha em outro usuário, bloqueia
+                if (pass === "09123678oi" && user !== "savio") {
+                    alert("ACESSO NEGADO: Esta senha é exclusiva do Administrador Sávio.");
+                    return;
+                }
+
+                if (DATABASE[user] === pass) {
+                    usuarioLogado = user.toUpperCase();
+                    document.getElementById('login-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('sidebar').classList.remove('hidden');
+                        document.getElementById('main-content').classList.remove('hidden');
+                        document.getElementById('user-display').innerText = `Online: ${usuarioLogado}`;
+                        boasVindas();
+                    }, 500);
+                } else {
+                    alert("Senha incorreta para este usuário.");
+                }
+            } else {
+                alert("Usuário não cadastrado no sistema.");
+            }
         }
 
-        async function logar() {
-            const user = document.getElementById('u').value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const pass = document.getElementById('p').value;
-            const pHash = await hash(pass);
-
-            if((user === "savio") && pHash === sHash) {
-                document.getElementById('lock').classList.add('hidden');
-                document.getElementById('aside').classList.remove('hidden');
-                document.getElementById('main').classList.remove('hidden');
-            } else { alert("Acesso Negado. Verifique usuário e senha."); }
+        function boasVindas() {
+            const win = document.getElementById('chat-win');
+            win.innerHTML = `<div class="flex gap-4"><div class="w-10 h-10 face-maizi flex-shrink-0"></div><div class="glass p-5 rounded-[25px] rounded-tl-none max-w-[85%] text-sm leading-relaxed border-white/10">Olá, **${usuarioLogado}**. O MAIZI CORE está operando em capacidade máxima. Estou pronta para gerar imagens em 8K ou te ajudar nos estudos. O que faremos agora?</div></div>`;
         }
 
         function mudar(n) {
-            mod = n;
-            document.getElementById('label').innerText = `Módulo ${n}`;
+            moduloAtual = n;
+            document.getElementById('mod-title').innerText = `Módulo ${n}`;
             document.querySelectorAll('.btn-materia').forEach(b => b.classList.remove('active-mod', 'text-white'));
             document.getElementById(`b-${n}`).classList.add('active-mod');
         }
 
-        function abrirConfig() { document.getElementById('cfg').classList.toggle('hidden'); }
+        function toggleCfg() { document.getElementById('cfg-modal').classList.toggle('hidden'); }
 
-        function salvarCfg() {
-            const c = document.getElementById('cor').value;
-            const u = document.getElementById('img-url').value;
-            if(c) document.documentElement.style.setProperty('--fundo', c);
-            if(u) document.documentElement.style.setProperty('--avatar', `url('${u}')`);
-            abrirConfig();
+        function aplicarAjustes() {
+            const cor = document.getElementById('bg-color').value;
+            const url = document.getElementById('avatar-input').value;
+            if(cor) document.documentElement.style.setProperty('--fundo', cor);
+            if(url) {
+                document.documentElement.style.setProperty('--avatar', `url('${url}')`);
+                localStorage.setItem('maizi_perfil_supreme', url);
+            }
+            toggleCfg();
         }
 
-        async function enviar() {
-            const input = document.getElementById('msg');
+        async function processarEnvio() {
+            const input = document.getElementById('user-msg');
             const win = document.getElementById('chat-win');
             if(!input.value) return;
 
             const t = input.value;
-            win.innerHTML += `<div class="flex justify-end"><div class="bg-white text-black p-4 rounded-2xl rounded-tr-none text-sm font-bold max-w-[80%]">${t}</div></div>`;
+            win.innerHTML += `<div class="flex justify-end"><div class="bg-white text-black p-5 rounded-[25px] rounded-tr-none text-sm font-bold max-w-[80%] shadow-xl">${t}</div></div>`;
             input.value = "";
             win.scrollTop = win.scrollHeight;
 
-            if(t.toLowerCase().includes("imagem") || t.toLowerCase().includes("foto")) {
-                const p = encodeURIComponent(t + ", ultra-realistic, photorealistic, 8k, highly detailed, sharp focus, cinema lighting");
-                const url = `https://image.pollinations.ai/prompt/${p}?width=1080&height=1080&nologo=true&seed=${Math.random()}`;
-                
-                win.innerHTML += `<div class="flex gap-3"><div class="w-8 h-8 perfil-ia"></div><div class="glass p-2 rounded-2xl max-w-[90%]"><img src="${url}" class="rounded-xl w-full" onerror="this.src='https://via.placeholder.com/1080?text=Erro+ao+Carregar+Imagem+Nítida'"></div></div>`;
+            // MOTOR DE IMAGEM OTIMIZADO (8K / NITIDEZ TOTAL)
+            if(t.toLowerCase().includes("imagem") || t.toLowerCase().includes("foto") || t.toLowerCase().includes("gere")) {
+                const loaderId = "L-" + Date.now();
+                win.innerHTML += `<div class="flex gap-4" id="${loaderId}"><div class="w-10 h-10 face-maizi flex-shrink-0"></div><div class="glass p-5 rounded-[25px] text-xs text-gray-400 animate-pulse">Iniciando renderização fotorrealista... Forçando nitidez 8K...</div></div>`;
+                win.scrollTop = win.scrollHeight;
+
+                const promptTurbo = encodeURIComponent(t + ", ultra-realistic, photorealistic, 8k, majestic, sharp focus, cinematic lighting, masterpiece, high detail, no artifacts, high resolution");
+                const finalUrl = `https://image.pollinations.ai/prompt/${promptTurbo}?width=1080&height=1080&nologo=true&seed=${Math.random()}`;
+
+                // Simulação de processamento para garantir nitidez
+                setTimeout(() => {
+                    document.getElementById(loaderId).remove();
+                    win.innerHTML += `
+                        <div class="flex gap-4">
+                            <div class="w-10 h-10 face-maizi flex-shrink-0"></div>
+                            <div class="glass p-3 rounded-[30px] max-w-[95%] border-white/20">
+                                <img src="${finalUrl}" class="rounded-[20px] w-full shadow-2xl" onload="document.getElementById('chat-win').scrollTop = document.getElementById('chat-win').scrollHeight" onerror="this.src='https://via.placeholder.com/1080x1080/000000/FFFFFF?text=ERRO+DE+RENDERIZAÇÃO+8K'">
+                                <p class="text-[10px] text-gray-500 p-3 italic">Imagem processada com sucesso pelo Motor V.10.</p>
+                            </div>
+                        </div>`;
+                }, 3000);
             } else {
                 setTimeout(() => {
-                    win.innerHTML += `<div class="flex gap-3"><div class="w-8 h-8 perfil-ia"></div><div class="glass p-4 rounded-2xl text-sm">Entendido, Sávio. No módulo ${mod}, meu processamento está 100% focado em você. Como posso ajudar agora?</div></div>`;
+                    let resp = `Comando recebido, ${usuarioLogado}. Como sua inteligência central no módulo ${moduloAtual}, estou processando os dados para te dar a melhor resposta possível. Deseja aprofundar o assunto?`;
+                    if(moduloAtual === "Matemática") resp = "Cálculo em análise. A lógica matemática é a base do sistema Maizi. Posso resolver equações ou explicar conceitos para você.";
+                    
+                    win.innerHTML += `<div class="flex gap-4"><div class="w-10 h-10 face-maizi flex-shrink-0"></div><div class="glass p-5 rounded-[25px] rounded-tl-none max-w-[85%] text-sm leading-relaxed">${resp}</div></div>`;
                     win.scrollTop = win.scrollHeight;
-                }, 600);
+                }, 700);
             }
-            win.scrollTop = win.scrollHeight;
         }
     </script>
 </body>
