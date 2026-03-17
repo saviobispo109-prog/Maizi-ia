@@ -31,5 +31,48 @@
     <div class="input-area">
         <input type="text" id="texto" placeholder="Tire sua dúvida de estudos aqui...">
         <button onclick="enviar()">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="
-                
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="black"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+        </button>
+    </div>
+
+    <script>
+        function enviar() {
+            let campo = document.getElementById('texto');
+            let chat = document.getElementById('chat');
+            let msgUser = campo.value.trim();
+            if(msgUser == "") return;
+
+            chat.innerHTML += `<div class="msg user">${msgUser}</div>`;
+            
+            let resposta = "Entendido. Estou processando sua dúvida para te ajudar da melhor forma possível. Podemos começar definindo o tópico principal?";
+            let baixa = msgUser.toLowerCase();
+
+            // Respostas discretas (Só aparecem se perguntar)
+            if(baixa.includes("luffy")) {
+                resposta = "Como assistente, meu foco é te ajudar a estudar, mas admito que o Luffy tem determinação de sobra! Que tal usarmos essa energia para terminar seus exercícios?";
+            } 
+            else if(baixa.includes("goku")) {
+                resposta = "O Goku sempre supera seus limites, e você também pode fazer isso nos estudos! Qual assunto está difícil hoje?";
+            }
+            else if(baixa.includes("quem é você") || baixa.includes("quem e voce")) {
+                resposta = "Eu sou a MAIZI, uma inteligência desenvolvida para ser sua parceira de estudos e facilitar seu aprendizado.";
+            }
+            else if(baixa.includes("obrigado") || baixa.includes("valeu")) {
+                resposta = "Disponha! Estudar é o caminho para o sucesso. Se precisar de mais alguma coisa, é só chamar.";
+            }
+
+            setTimeout(() => {
+                chat.innerHTML += `<div class="msg bot">${resposta}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            }, 800);
+
+            campo.value = "";
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        document.getElementById("texto").addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) { enviar(); }
+        });
+    </script>
+</body>
+</html>
