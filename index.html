@@ -3,162 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAIZI IA - Premium</title>
+    <title>MAIZI CORE - Elite Study IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --bg: #000; --text: #fff; --accent: #fff; --card: #1a1a1a; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow: hidden; transition: 0.5s; }
-        
-        /* Efeito de Névoa para o tema Branco */
-        .fog { position: fixed; width: 100%; height: 100%; pointer-events: none; opacity: 0; background: url('https://www.transparenttextures.com/patterns/asfalt-dark.png'); transition: 0.5s; }
-
-        /* Tela de Login */
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        input[type="password"], input[type="text"] { padding: 12px; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; margin: 10px; width: 250px; outline: none; }
-
-        /* Layout Principal */
-        #app { display: none; height: 100vh; flex-direction: column; }
-        .header { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
-        .header img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid #fff; object-fit: cover; }
-
-        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { max-width: 85%; padding: 15px; border-radius: 12px; font-size: 14px; line-height: 1.6; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .bot { background: var(--card); align-self: flex-start; border: 1px solid #333; }
-        .user { background: #fff; color: #000; align-self: flex-end; font-weight: 600; }
-        .gen-img { width: 100%; border-radius: 8px; margin-top: 10px; border: 1px solid #444; display: block; }
-
-        .controls { padding: 15px; background: #000; border-top: 1px solid #333; display: flex; gap: 10px; }
-        button { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-send { background: #fff; color: #000; }
-        .btn-send:active { transform: scale(0.95); }
-        
-        /* Painel Admin */
-        #admin-panel { display: none; position: fixed; top: 60px; right: 10px; background: #111; border: 1px solid #fff; padding: 15px; border-radius: 8px; z-index: 100; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        .admin-btn { background: #333; color: white; font-size: 12px; padding: 5px 10px; margin-top: 5px; width: 100%; }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        :root { --main-bg: #000; --panel: #0a0a0a; --accent: #fff; }
+        body { background: var(--main-bg); color: #fff; font-family: 'Inter', sans-serif; }
+        .sync { font-family: 'Syncopate', sans-serif; text-transform: uppercase; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .active-chat { border-left: 3px solid #fff; background: rgba(255,255,255,0.1); }
+        #chat-window::-webkit-scrollbar { width: 4px; }
+        #chat-window::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
     </style>
 </head>
-<body>
-    <div class="fog" id="fog"></div>
+<body class="h-screen overflow-hidden">
 
-    <div id="login-screen">
-        <img src="182.png" width="80" style="border-radius: 50%; margin-bottom: 20px; border: 2px solid #fff;">
-        <h2 style="letter-spacing: 2px;">ACESSO MAIZI</h2>
-        <input type="password" id="pass" placeholder="Digite sua senha secreta">
-        <button class="btn-send" onclick="checkLogin()">CONECTAR</button>
+    <div id="login-screen" class="fixed inset-0 z-[100] bg-black flex items-center justify-center p-6">
+        <div class="max-w-md w-full glass p-8 rounded-2xl text-center">
+            <img src="182.png" class="w-24 h-24 rounded-full mx-auto border-2 border-white mb-4 object-cover">
+            <h1 class="sync text-2xl mb-6 tracking-widest">Maizi Core</h1>
+            
+            <div class="space-y-4">
+                <input type="password" id="admin-pass" placeholder="SENHA DE ACESSO" class="w-full bg-transparent border border-white/20 p-4 rounded-xl outline-none focus:border-white transition text-center">
+                <button onclick="auth()" class="w-full bg-white text-black font-bold p-4 rounded-xl hover:bg-gray-200 transition">ENTRAR NO SISTEMA</button>
+                
+                <div class="flex items-center my-4"><div class="flex-1 h-px bg-white/10"></div><span class="px-4 text-xs text-white/40">OU ENTRAR COM</span><div class="flex-1 h-px bg-white/10"></div></div>
+                
+                <div class="flex gap-4">
+                    <button onclick="socialAuth('Google')" class="flex-1 border border-white/10 p-3 rounded-xl flex justify-center hover:bg-white/5 transition"><img src="https://www.svgrepo.com/show/355037/google-icon.svg" class="w-6"></button>
+                    <button onclick="socialAuth('Facebook')" class="flex-1 border border-white/10 p-3 rounded-xl flex justify-center hover:bg-white/5 transition"><img src="https://www.svgrepo.com/show/448224/facebook.svg" class="w-6"></button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="app">
-        <div class="header">
-            <div onclick="toggleAdmin()" style="cursor: pointer; font-size: 14px;">⚙️ PAINEL</div>
-            <div id="theme-selector">
-                <button onclick="setTheme('dark')" style="background: none; padding: 5px;">⚫</button>
-                <button onclick="setTheme('light')" style="background: none; padding: 5px;">⚪</button>
+    <div id="app" class="hidden flex h-screen">
+        
+        <aside class="w-20 md:w-64 bg-[#050505] border-r border-white/10 flex flex-col">
+            <div class="p-6 text-center border-bottom border-white/5">
+                <span class="sync text-xs font-bold tracking-tighter hidden md:block">Database: Sávio</span>
             </div>
-            <img src="182.png" alt="Avatar Maizi">
-        </div>
+            
+            <nav class="flex-1 overflow-y-auto px-2 space-y-2 mt-4" id="chat-list">
+                <button onclick="switchChat('Geral')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition active-chat" id="btn-Geral"><span>🤖</span> <span class="hidden md:block">MAIZI Geral</span></button>
+                <button onclick="switchChat('Português')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Português"><span>📚</span> <span class="hidden md:block text-left">Português</span></button>
+                <button onclick="switchChat('Matemática')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Matemática"><span>🔢</span> <span class="hidden md:block text-left">Matemática</span></button>
+                <button onclick="switchChat('Ciências')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Ciências"><span>🧬</span> <span class="hidden md:block text-left">Ciências</span></button>
+                <button onclick="switchChat('Geografia')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Geografia"><span>🌍</span> <span class="hidden md:block text-left">Geografia</span></button>
+                <button onclick="switchChat('História')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-História"><span>📜</span> <span class="hidden md:block text-left">História</span></button>
+                <button onclick="switchChat('Redação')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Redação"><span>✍️</span> <span class="hidden md:block text-left">Redação</span></button>
+                <button onclick="switchChat('Frações')" class="w-full p-4 rounded-xl flex items-center gap-3 hover:bg-white/5 transition" id="btn-Frações"><span>🍕</span> <span class="hidden md:block text-left">Frações</span></button>
+            </nav>
+        </aside>
 
-        <div id="admin-panel">
-            <h4 style="margin: 0 0 10px 0; border-bottom: 1px solid #333;">Admin: Sávio</h4>
-            <p style="font-size: 11px; color: #888;">Fundo Personalizado:</p>
-            <input type="text" id="custom-bg" placeholder="#1a1a1a" style="width: 100px; font-size: 12px;" onchange="customTheme(this.value)">
-            <button class="admin-btn" onclick="location.reload()">Reiniciar Sistema</button>
-        </div>
+        <main class="flex-1 flex flex-col relative">
+            <header class="p-4 border-b border-white/10 flex justify-between items-center glass">
+                <h2 id="current-chat-title" class="sync text-sm tracking-widest">MAIZI Geral</h2>
+                <div class="flex gap-4">
+                    <button onclick="alert('Admin Panel: Online')" class="text-xs border border-white/20 px-3 py-1 rounded-full">Sávio ADM</button>
+                    <img src="182.png" class="w-8 h-8 rounded-full">
+                </div>
+            </header>
 
-        <div id="chat">
-            <div class="msg bot">Sistema MAIZI inicializado. Modo Premium ativado. O que vamos criar ou estudar hoje, Sávio?</div>
-        </div>
+            <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-6">
+                </div>
 
-        <div class="controls">
-            <input type="text" id="input" placeholder="Dúvida ou 'Gere uma imagem de...'">
-            <button class="btn-send" onclick="handleInput()">➤</button>
-        </div>
+            <div class="p-6">
+                <div class="max-w-4xl mx-auto flex gap-4 glass p-2 rounded-2xl">
+                    <input type="text" id="user-input" placeholder="Pergunte sobre a matéria ou peça uma imagem real..." class="flex-1 bg-transparent p-4 outline-none">
+                    <button onclick="sendMessage()" class="bg-white text-black p-4 rounded-xl hover:bg-gray-200 transition font-bold">ENVIAR</button>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        // Verificação de Senha Atualizada
-        function checkLogin() {
-            const senhaDigitada = document.getElementById('pass').value;
-            if(senhaDigitada === "09123678oi") { 
+        let currentChat = 'Geral';
+        const senhaCorreta = "09123678oi";
+
+        function auth() {
+            if(document.getElementById('admin-pass').value === senhaCorreta) {
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app').style.display = 'flex';
-            } else { 
-                alert("Acesso Negado. Senha incorreta."); 
-            }
+                document.getElementById('app').classList.remove('hidden');
+                document.getElementById('app').classList.add('flex');
+            } else { alert("Senha Incorreta"); }
         }
 
-        // Sistema de Temas
-        function setTheme(mode) {
-            const fog = document.getElementById('fog');
-            if(mode === 'light') {
-                document.documentElement.style.setProperty('--bg', '#ffffff');
-                document.documentElement.style.setProperty('--text', '#000000');
-                document.documentElement.style.setProperty('--card', '#f2f2f2');
-                fog.style.opacity = "0.6";
-            } else {
-                document.documentElement.style.setProperty('--bg', '#000000');
-                document.documentElement.style.setProperty('--text', '#ffffff');
-                document.documentElement.style.setProperty('--card', '#1a1a1a');
-                fog.style.opacity = "0";
-            }
+        function socialAuth(type) {
+            alert(`Conectando ao ${type}... (Login Simulado com Sucesso)`);
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('app').classList.add('flex');
         }
 
-        function customTheme(color) {
-            document.documentElement.style.setProperty('--bg', color);
+        function switchChat(chat) {
+            currentChat = chat;
+            document.getElementById('current-chat-title').innerText = `MAIZI ${chat}`;
+            document.querySelectorAll('#chat-list button').forEach(b => b.classList.remove('active-chat'));
+            document.getElementById(`btn-${chat}`).classList.add('active-chat');
+            document.getElementById('chat-window').innerHTML = `<div class='text-center text-white/20 text-xs my-4'>Módulo de ${chat} carregado.</div>`;
         }
 
-        function toggleAdmin() {
-            const panel = document.getElementById('admin-panel');
-            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-        }
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chatWin = document.getElementById('chat-window');
+            if(!input.value) return;
 
-        // Lógica da IA e Gerador de Imagens Reais
-        async function handleInput() {
-            const input = document.getElementById('input');
-            const chat = document.getElementById('chat');
-            const text = input.value.trim();
-            if(!text) return;
-
-            chat.innerHTML += `<div class="msg user">${text}</div>`;
+            const text = input.value;
+            chatWin.innerHTML += `<div class="flex justify-end"><div class="bg-white text-black p-4 rounded-2xl max-w-[80%] font-semibold">${text}</div></div>`;
             input.value = "";
-            chat.scrollTop = chat.scrollHeight;
 
-            const baixa = text.toLowerCase();
+            // LOGICA DE RESPOSTAS ESPECIALIZADAS
+            let resposta = "";
+            const t = text.toLowerCase();
 
-            // Comando de Imagem Real
-            if(baixa.includes("gere") || baixa.includes("gera") || baixa.includes("imagem") || baixa.includes("desenhe")) {
-                chat.innerHTML += `<div class="msg bot">🎨 Criando imagem real baseada no seu pedido...</div>`;
-                chat.scrollTop = chat.scrollHeight;
-                
-                const promptFinal = encodeURIComponent(text);
-                const imgUrl = `https://image.pollinations.ai/prompt/${promptFinal}?width=1080&height=1080&nologo=true&seed=${Math.floor(Math.random() * 1000)}`;
+            if(t.includes("gera") || t.includes("imagem") || t.includes("foto")) {
+                resposta = "Gerando imagem realista de alta definição... 🚀";
+                const imgUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1080&height=1080&nologo=true&model=realism`;
                 
                 setTimeout(() => {
-                    chat.innerHTML += `<div class="msg bot">Aqui está sua criação:<br><img src="${imgUrl}" class="gen-img" onload="document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight"></div>`;
-                }, 2500);
-            } 
-            else {
-                // Respostas de Estudo/Gerais Variadas
-                const respostas = [
-                    "Excelente ponto. Se analisarmos profundamente, isso se conecta com a base do que estamos estudando.",
-                    "Processando... De acordo com meus módulos de aprendizado, a melhor forma de entender isso é dividindo o problema em partes.",
-                    "Interessante! Você quer que eu explique isso de uma forma mais técnica ou mais simples?",
-                    "Como sua assistente premium, verifiquei que este tópico é recorrente. Quer uma lista de exercícios?",
-                    "Entendido, Sávio. Vamos focar na solução. Aqui está o que eu sugiro..."
-                ];
-                const r = respostas[Math.floor(Math.random() * respostas.length)];
-                
+                    chatWin.innerHTML += `<div class="flex justify-start"><div class="glass p-4 rounded-2xl max-w-[80%]">
+                        <img src="${imgUrl}" class="rounded-lg border border-white/20 mb-2">
+                        <p class="text-xs text-white/40">Imagem real gerada por IA Core.</p>
+                    </div></div>`;
+                    chatWin.scrollTop = chatWin.scrollHeight;
+                }, 2000);
+            } else {
+                // Inteligência por matéria
+                if(currentChat === 'Matemática' || currentChat === 'Frações') {
+                    resposta = "Para resolver esse cálculo, devemos primeiro isolar a variável e aplicar a regra de operação inversa. Vamos fazer o passo a passo?";
+                } else if(currentChat === 'Redação') {
+                    resposta = "Sua ideia é boa! Para uma redação nota 1000, tente usar o conectivo 'Outrossim' para ligar seus argumentos no segundo parágrafo.";
+                } else if(currentChat === 'Português') {
+                    resposta = "Analisando a sintaxe da sua frase... Lembre-se que o sujeito nunca pode ser separado do predicado por vírgula.";
+                } else {
+                    resposta = `Sávio, no módulo de ${currentChat}, identifiquei que sua dúvida é fundamental. De acordo com a base de dados, a resposta correta envolve analisar os fatos de forma lógica. Quer que eu aprofunde?`;
+                }
+
                 setTimeout(() => {
-                    chat.innerHTML += `<div class="msg bot">${r}</div>`;
-                    chat.scrollTop = chat.scrollHeight;
+                    chatWin.innerHTML += `<div class="flex justify-start"><div class="glass p-4 rounded-2xl max-w-[80%] border-l-4 border-white">${resposta}</div></div>`;
+                    chatWin.scrollTop = chatWin.scrollHeight;
                 }, 1000);
             }
+            chatWin.scrollTop = chatWin.scrollHeight;
         }
 
-        // Enviar com a tecla Enter do teclado
-        document.getElementById("input").addEventListener("keyup", function(event) {
-            if (event.keyCode === 13) { handleInput(); }
-        });
+        document.getElementById("user-input").addEventListener("keyup", function(e) { if(e.keyCode === 13) sendMessage(); });
     </script>
 </body>
 </html>
