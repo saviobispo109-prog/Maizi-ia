@@ -1,219 +1,44 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAIZI SUPREME - Jacobina, v.EXEC</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
-        :root { --cor-fundo: #080808; --cor-painel: #111111; --avatar-ia: url('https://image.shutterstock.com/image-vector/braincomputer-interface-icon-concept-artificial-260nw-2616075979.jpg'); --fonte: 'Space Grotesk', sans-serif; --perfil-user: url('https://cdn.dribbble.com/userupload/18106152/file/original-5ba1f6fd13d66bfd53fd614829ba2681.png?format=webp&resize=400x300&vertical=center'); }
-        body { background-color: var(--cor-fundo); background-image: var(--fundo-user); color: #fff; font-family: var(--fonte); transition: 0.4s; overflow: hidden; margin: 0; }
-        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .btn-materia { width: 100%; p: 12px; border-radius: 12px; margin-bottom: 6px; transition: 0.3s; display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 14px; border: 1px solid transparent; }
-        .btn-materia:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); }
-        .active-mod { background: #fff !important; color: #000 !important; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .img-maizi-face { background-image: var(--avatar-ia); background-size: cover; background-position: center; border-radius: 50%; }
-        .input-glass { background: rgba(0, 0, 0, 0.5); border: 1px solid #333; color: white; transition: 0.3s; outline: none; }
-        .input-glass:focus { border-color: white; }
-        .user-avatar { background-image: var(--perfil-user); background-size: cover; background-position: center; border-radius: 50%; }
-    </style>
-</head>
-<body class="h-screen w-screen flex flex-col md:flex-row">
-
-    <aside class="w-full md:w-64 bg-[#0a0a0a] border-r border-white/5 flex flex-col flex-shrink-0 z-20">
-        <div class="p-6 border-b border-white/5 flex items-center gap-3">
-            <div class="w-10 h-10 user-avatar border border-white/20"></div>
-            <div class="text-xs">
-                <h1 class="font-bold tracking-tighter">MAIZI SUPREME</h1>
-                <p class="text-[9px] text-gray-500">v.EXEC / Jacobina</p>
-                <p id="user-name-display" class="text-[9px] text-green-400">Database: Savio</p>
-            </div>
-        </div>
-
-        <div class="p-4 flex-1 overflow-y-auto">
-            <p class="text-[10px] text-gray-500 mb-4 font-bold tracking-widest uppercase">Módulos (6 Controles)</p>
-            <button onclick="mudarMateria('Geral')" id="m-Geral" class="btn-materia active-mod"><span>GRL</span> Geral / Controle</button>
-            <button onclick="mudarMateria('Admin')" id="m-Admin" class="btn-materia text-gray-400"><span>ADM</span> Admin / Painel</button>
-            <button onclick="mudarMateria('Execução')" id="m-Execução" class="btn-materia text-gray-400"><span>EXE</span> Execução / Ordens</button>
-            <button onclick="mudarMateria('Lógica')" id="m-Lógica" class="btn-materia text-gray-400"><span>LOG</span> Lógica / Cérebro</button>
-            <button onclick="mudarMateria('Segurança')" id="m-Segurança" class="btn-materia text-gray-400"><span>SEC</span> Segurança / Cripto</button>
-            <button onclick="mudarMateria('Configurações')" id="m-Configurações" class="btn-materia text-gray-400"><span>CNF</span> Config / Sistema</button>
-        </div>
-
-        <div class="p-4 border-t border-white/5 flex flex-col gap-2">
-            <button onclick="toggleConfig()" class="w-full p-3 glass rounded-xl text-xs font-bold hover:bg-white/10 transition">⚙️ CUSTOMIZAR SUPREME</button>
-            <button onclick="sair()" class="text-xs text-red-500 font-bold hover:underline">DESCONECTAR (LOCK)</button>
-        </div>
-    </aside>
-
-    <div id="auth-screen" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-lg flex flex-col items-center justify-center p-4">
-        <div class="glass p-8 rounded-3xl w-full max-w-md relative overflow-hidden border-white">
-            <div class="text-center mb-8">
-                <div class="w-20 h-20 img-maizi-face mx-auto border-2 border-white mb-4"></div>
-                <h1 class="text-3xl font-bold tracking-tighter">MAIZI SUPREME</h1>
-                <p class="text-sm text-gray-400 mt-2">v.EXEC - Jacobina, Bahia</p>
-                <p class="text-[11px] text-green-400 mt-1">Status: Criptografia de Elite Ativa</p>
-            </div>
-            
-            <div class="space-y-4">
-                <input type="text" id="login-user" placeholder="Nome de Usuário" class="w-full input-glass p-4 rounded-xl text-center">
-                <input type="password" id="login-pass" placeholder="Senha Criptografada" class="w-full input-glass p-4 rounded-xl text-center">
-                <button onclick="checkAuth()" class="w-full bg-white text-black font-bold p-4 rounded-xl hover:bg-gray-200 transition">CONECTAR</button>
-            </div>
-            
-            <div class="mt-8 flex items-center justify-center gap-4 border-t border-gray-800 pt-6">
-                <p class="text-xs text-white/40">Geral é Geral: Comande Tudo</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="config-panel" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
-        <div class="glass p-8 rounded-3xl max-w-sm w-full space-y-6">
-            <h2 class="text-xl font-bold sync tracking-wider">Customização Supreme</h2>
-            <div>
-                <label class="text-xs text-gray-400 block mb-2">URL da Imagem de Fundo (User)</label>
-                <input type="text" id="custom-bg-url" placeholder="URL da imagem (ex: imgur)" class="w-full input-glass p-3 rounded-xl text-sm outline-none">
-            </div>
-            <div>
-                <label class="text-xs text-gray-400 block mb-2">URL da Imagem do Perfil (User)</label>
-                <input type="text" id="custom-profile-url" placeholder="URL da imagem (ex: imgur)" class="w-full input-glass p-3 rounded-xl text-sm outline-none">
-            </div>
-            <button onclick="saveConfigsSupreme()" class="w-full bg-white text-black font-bold p-4 rounded-xl">SALVAR ALTERAÇÕES</button>
-            <button onclick="toggleConfig()" class="w-full text-xs text-gray-500">Fechar</button>
-        </div>
-    </div>
-
-    <main class="flex-1 flex flex-col bg-transparent relative">
-        <header class="p-5 border-b border-white/5 flex justify-between items-center glass">
-            <div>
-                <h2 id="titulo" class="font-bold text-lg">Módulo de Execução (ImagePro V.10)</h2>
-                <p id="sub" class="text-xs text-gray-500">Módulo de Execução carregado.</p>
-            </div>
-            <div class="w-8 h-8 img-maizi-face"></div>
-        </header>
-
-        <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-6">
-            <div class="flex gap-3">
-                <div class="w-8 h-8 img-maizi-face flex-shrink-0"></div>
-                <div class="glass p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm leading-relaxed border-white">
-                    Módulo de Execução Suprema carregado. Sávio, as IA lixo foram removidas. O foco é desempenho e execução. O sistema está torando de verdade. Sua senha está protegida e o gerador de imagens está nítido. Geral é Geral. Onde vamos começar?
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 md:p-8">
-            <div class="max-w-4xl mx-auto flex items-center gap-3 bg-[#111] border border-white/10 p-2 rounded-2xl focus-within:border-white/30 transition active:scale-90">
-                <input type="text" id="user-in" placeholder="Comande, peça imagens realistas nítidas ou controle." class="flex-1 bg-transparent p-3 outline-none text-sm placeholder:text-gray-600">
-                <button onclick="enviar()" class="bg-white text-black px-6 py-3 rounded-xl font-bold hover:scale-95 transition">ENVIAR</button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // --- NÍVEL 1: SISTEMA DE AUTENTICAÇÃO SUPREME (Senha Criptografada) ---
-        const hashSenhaMestra = "25c1b52f6f4c718b958e4585e1352e8006e88d1891963953e5e463d666d6d63e"; // Hash de '09123678oi' (SHA-256)
+<!-- Estrutura de Login/Cadastro da MAIZI IA -->
+<div id="auth-container" style="background: rgba(26, 26, 26, 0.9); padding: 20px; border-radius: 15px; color: white; font-family: sans-serif; max-width: 400px; margin: auto; backdrop-filter: blur(10px); border: 1px solid #333;">
+    <h2 id="title" style="text-align: center;">MAIZI IA - Login</h2>
+    
+    <div id="form-body">
+        <input type="text" id="username" placeholder="Nome de Usuário" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none; background: #333; color: white;">
         
-        async function sha256(message) {
-            const msgBuffer = new TextEncoder().encode(message);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
+        <div style="position: relative;">
+            <input type="password" id="password" placeholder="Sua Senha" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none; background: #333; color: white;">
+        </div>
 
-        async function checkAuth() {
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const inputHash = await sha256(pass);
+        <button onclick="autenticar()" style="width: 100%; padding: 12px; border-radius: 5px; border: none; background: #fff; color: #000; font-weight: bold; cursor: pointer; transition: 0.3s;">Entrar no Sistema</button>
+        
+        <p id="msg" style="color: #ff4d4d; font-size: 12px; margin-top: 10px; text-align: center;"></p>
+    </div>
+</div>
 
-            if(user === "Savio" && inputHash === hashSenhaMestra) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('user-name-display').innerText = `Database: ${user}`;
-                mudarMateria('Execução');
-            } else {
-                alert("ACESSO NEGADO. Credenciais inválidas.");
-            }
-        }
+<script>
+function autenticar() {
+    const user = document.getElementById('username').value;
+    const pass = document.getElementById('password').value;
+    const msg = document.getElementById('msg');
+    
+    // A SENHA MESTRE QUE VOCÊ DEFINIU
+    const masterPass = "09123678oi";
 
-        function sair() {
-            location.reload(); // Recarrega para bloquear
-        }
+    if (user === "" || pass === "") {
+        msg.innerText = "Preencha todos os campos!";
+        return;
+    }
 
-        function toggleConfig() { document.getElementById('config-panel').classList.toggle('hidden'); }
-
-        function saveConfigsSupreme() {
-            const bgUrl = document.getElementById('custom-bg-url').value;
-            const profileUrl = document.getElementById('custom-profile-url').value;
-            if(bgUrl) document.documentElement.style.setProperty('--fundo-user', `url('${bgUrl}')`);
-            if(profileUrl) {
-                document.documentElement.style.setProperty('--perfil-user', `url('${profileUrl}')`);
-                localStorage.setItem('maizi_profile_supreme', profileUrl);
-            }
-            toggleConfig();
-        }
-
-        function mudarMateria(n) {
-            document.getElementById('titulo').innerText = `Módulo de ${n} (ImagePro V.10)`;
-            document.getElementById('sub').innerText = `Módulo de ${n} carregado.`;
-            
-            const botoes = document.querySelectorAll('.btn-materia');
-            botoes.forEach(b => {
-                b.classList.remove('active-mod');
-                b.classList.add('text-gray-400');
-            });
-            
-            const btn = document.getElementById(`m-${n}`);
-            btn.classList.add('active-mod');
-            btn.classList.remove('text-gray-400');
-        }
-
-        async function enviar() {
-            const input = document.getElementById('user-in');
-            const chat = document.getElementById('chat-window');
-            if(!input.value) return;
-
-            const txt = input.value;
-            chat.innerHTML += `<div class="flex justify-end"><div class="bg-white text-black p-4 rounded-2xl rounded-tr-none text-sm font-medium max-w-[80%]">${txt}</div></div>`;
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
-            if(txt.toLowerCase().includes("imagem") || txt.toLowerCase().includes("gere") || txt.toLowerCase().includes("foto") || txt.toLowerCase().includes("desenhe")) {
-                chat.innerHTML += `<div class="flex gap-3" id="load-img"><div class="w-8 h-8 img-maizi-face"></div><div class="glass p-4 rounded-2xl text-xs text-gray-400">🎨 Acessando motor ImagePro V.10... Gerando imagem real 8K nítida...</div></div>`;
-                chat.scrollTop = chat.scrollHeight;
-                
-                const realPrompt = encodeURIComponent(txt + ", majesty, cinematic lighting, 8k, ultra-realistic, highly detailed photorealistic masterpiece, sharp focus, high definition, no artifacts");
-                const urlImg = `https://image.pollinations.ai/prompt/${realPrompt}?width=1080&height=1080&nologo=true&seed=${Math.random()}&quality=pro`;
-
-                setTimeout(() => {
-                    document.getElementById('load-img').remove();
-                    chat.innerHTML += `
-                        <div class="flex gap-3">
-                            <div class="w-8 h-8 img-maizi-face"></div>
-                            <div class="glass p-2 rounded-2xl max-w-[95%] border-white">
-                                <img src="${urlImg}" class="rounded-xl w-full border border-white/10" onload="document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight">
-                                <p class="text-[10px] text-gray-500 p-2 italic">Imagem nítida e realista gerada pelo ImagePro V.10 MAIZI CORE.</p>
-                            </div>
-                        </div>`;
-                }, 3500); 
-                return;
-            }
-
-            // Respostas Inteligentes Otimizadas (Geral é Geral)
-            setTimeout(() => {
-                const respostas = [
-                    "Sávio, essa dúvida é fundamental. Deixe-me explicar...",
-                    "Como sua IA central, verifiquei que este tópico é recorrente. Quer uma lista de comandos?",
-                    "Interessante! Você quer que eu explique isso de uma forma mais técnica ou mais simples?",
-                    "Processando... De acordo com meus módulos de execução, a melhor forma de entender isso é dividindo o problema em partes.",
-                    "Entendido. Vamos focar na solução. Aqui está o que eu sugiro..."
-                ];
-                const r = respostas[Math.floor(Math.random() * respostas.length)];
-                chat.innerHTML += `<div class="flex gap-3"><div class="w-8 h-8 img-maizi-face"></div><div class="glass p-4 rounded-2xl rounded-tl-none max-w-[85%] text-sm">${r}</div></div>`;
-                chat.scrollTop = chat.scrollHeight;
-            }, 800);
-        }
-    </script>
-</body>
-</html>
+    if (pass === masterPass) {
+        msg.style.color = "#00ff88";
+        msg.innerText = "Bem-vindo, Sávio! Acessando Painel ADM...";
+        // Aqui você redireciona para o painel secreto
+        setTimeout(() => { window.location.href = "painel_adm.html"; }, 1500);
+    } else {
+        msg.style.color = "#fff";
+        msg.innerText = "Login realizado como Usuário Padrão.";
+        // Aqui redireciona para a IA normal
+        setTimeout(() => { window.location.href = "chat_geral.html"; }, 1500);
+    }
+}
+</script>
