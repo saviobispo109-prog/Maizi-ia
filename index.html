@@ -1,44 +1,180 @@
-<!-- Estrutura de Login/Cadastro da MAIZI IA -->
-<div id="auth-container" style="background: rgba(26, 26, 26, 0.9); padding: 20px; border-radius: 15px; color: white; font-family: sans-serif; max-width: 400px; margin: auto; backdrop-filter: blur(10px); border: 1px solid #333;">
-    <h2 id="title" style="text-align: center;">MAIZI IA - Login</h2>
-    
-    <div id="form-body">
-        <input type="text" id="username" placeholder="Nome de Usuário" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none; background: #333; color: white;">
-        
-        <div style="position: relative;">
-            <input type="password" id="password" placeholder="Sua Senha" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: none; background: #333; color: white;">
-        </div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIZI IA - Nexus Control</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --glass: rgba(20, 20, 20, 0.8);
+            --accent: #1e90ff; /* Azul Safira Discreto */
+            --text: #e0e0e0;
+        }
 
-        <button onclick="autenticar()" style="width: 100%; padding: 12px; border-radius: 5px; border: none; background: #fff; color: #000; font-weight: bold; cursor: pointer; transition: 0.3s;">Entrar no Sistema</button>
-        
-        <p id="msg" style="color: #ff4d4d; font-size: 12px; margin-top: 10px; text-align: center;"></p>
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Fundo com efeito de rede neural discreta */
+        .background-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #101010 0%, #050505 100%);
+            z-index: -1;
+        }
+
+        /* Container Principal */
+        #app {
+            display: flex; flex-direction: column;
+            height: 100vh; max-width: 900px; margin: 0 auto;
+            backdrop-filter: blur(20px);
+            background: var(--glass);
+            border-left: 1px solid #222; border-right: 1px solid #222;
+        }
+
+        /* Tela de Login */
+        #login-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; text-align: center;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 40px; border-radius: 20px;
+            border: 1px solid #333; width: 80%; max-width: 350px;
+        }
+
+        input {
+            width: 100%; padding: 12px; margin: 10px 0;
+            background: #111; border: 1px solid #333;
+            color: white; border-radius: 8px; outline: none;
+        }
+
+        button {
+            width: 100%; padding: 12px; margin-top: 10px;
+            background: var(--accent); color: white;
+            border: none; border-radius: 8px; font-weight: bold;
+            cursor: pointer; transition: 0.3s;
+        }
+
+        button:hover { opacity: 0.8; transform: scale(1.02); }
+
+        /* Chat Interface (Oculta por padrão) */
+        #chat-screen { display: none; flex-direction: column; height: 100%; }
+
+        #messages {
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
+        }
+
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 15px; line-height: 1.5; font-size: 14px; }
+        .user { align-self: flex-end; background: var(--accent); color: white; }
+        .ai { align-self: flex-start; background: #222; border: 1px solid #333; }
+
+        .input-area {
+            padding: 20px; border-top: 1px solid #222;
+            display: flex; gap: 10px; background: #0a0a0a;
+        }
+
+        #user-input { flex: 1; margin: 0; }
+    </style>
+</head>
+<body>
+
+<div class="background-overlay"></div>
+
+<div id="app">
+    <!-- TELA DE LOGIN -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="margin-bottom: 25px; letter-spacing: 2px;">MAIZI IA</h2>
+            <input type="text" id="user-name" placeholder="Identificação">
+            <input type="password" id="user-pass" placeholder="Código de Acesso">
+            <button onclick="login()">ACESSAR NÚCLEO</button>
+            <p id="login-msg" style="font-size: 12px; margin-top: 15px; color: #666;"></p>
+        </div>
+    </div>
+
+    <!-- TELA DE CHAT -->
+    <div id="chat-screen">
+        <div style="padding: 15px; border-bottom: 1px solid #222; text-align: center; font-size: 12px; color: var(--accent);">
+            PROTOCOL: NEXUS ACTIVE // MODO DISCRETO
+        </div>
+        <div id="messages"></div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Comando..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()" style="width: auto; margin: 0; padding: 0 20px;">ENVIAR</button>
+        </div>
     </div>
 </div>
 
 <script>
-function autenticar() {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    const msg = document.getElementById('msg');
-    
-    // A SENHA MESTRE QUE VOCÊ DEFINIU
-    const masterPass = "09123678oi";
+    const MASTER_PASS = "09123678oi";
+    let currentUser = "";
 
-    if (user === "" || pass === "") {
-        msg.innerText = "Preencha todos os campos!";
-        return;
+    function login() {
+        const name = document.getElementById('user-name').value;
+        const pass = document.getElementById('user-pass').value;
+        const msg = document.getElementById('login-msg');
+
+        if (pass === MASTER_PASS) {
+            currentUser = name || "Sávio";
+            iniciarIA();
+        } else if (pass.length > 3) {
+            currentUser = name || "Convidado";
+            iniciarIA();
+        } else {
+            msg.innerText = "ACESSO NEGADO: CREDENCIAIS INVÁLIDAS";
+        }
     }
 
-    if (pass === masterPass) {
-        msg.style.color = "#00ff88";
-        msg.innerText = "Bem-vindo, Sávio! Acessando Painel ADM...";
-        // Aqui você redireciona para o painel secreto
-        setTimeout(() => { window.location.href = "painel_adm.html"; }, 1500);
-    } else {
-        msg.style.color = "#fff";
-        msg.innerText = "Login realizado como Usuário Padrão.";
-        // Aqui redireciona para a IA normal
-        setTimeout(() => { window.location.href = "chat_geral.html"; }, 1500);
+    function iniciarIA() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('chat-screen').style.display = 'flex';
+        addMessage("ai", `Sistema carregado. Bem-vindo, ${currentUser}. O que vamos executar hoje?`);
     }
-}
+
+    function addMessage(type, text) {
+        const container = document.getElementById('messages');
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        div.innerText = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const text = input.value;
+        if (!text) return;
+
+        addMessage("user", text);
+        input.value = "";
+
+        // MUDAR URL PARA O SEU BACKEND (RENDER/VERCEL)
+        const BACKEND_URL = "https://seu-projeto-no-render.onrender.com/chat";
+
+        try {
+            const response = await fetch(BACKEND_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: text,
+                    password: MASTER_PASS, // Enviando para validar no backend
+                    user: currentUser
+                })
+            });
+            const data = await response.json();
+            addMessage("ai", data.response || "Erro na resposta do núcleo.");
+        } catch (e) {
+            addMessage("ai", "SISTEMA OFFLINE: Conecte o servidor backend para processar.");
+        }
+    }
 </script>
+
+</body>
+</html>
